@@ -1,0 +1,13 @@
+.env
+/vendor
+/node_modules
+/storage
+/public/storage
+*.zip
+*.tar
+*.log
+backup*
+public/images/product
+.idea
+*.log
+dubia_way_online.git

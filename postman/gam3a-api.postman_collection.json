@@ -1,0 +1,173 @@
+{
+  "info": {
+    "_postman_id": "0b6a78cb-f942-42ce-b2f8-gam3a-api",
+    "name": "Gam3a Backend API",
+    "description": "Laravel/PostgreSQL business API for Gam3a. WordPress owns content, S3 owns files, Next.js owns presentation, Admin owns operations.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "base_url", "value": "http://127.0.0.1:8000/api" },
+    { "key": "token", "value": "" },
+    { "key": "application_id", "value": "1" },
+    { "key": "document_id", "value": "1" },
+    { "key": "resource", "value": "universities" },
+    { "key": "resource_id", "value": "1" }
+  ],
+  "item": [
+    {
+      "name": "System",
+      "item": [
+        { "name": "API Root", "request": { "method": "GET", "url": "{{base_url}}" } },
+        { "name": "Health", "request": { "method": "GET", "url": "{{base_url}}/health" } }
+      ]
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register Student",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Student User\",\n  \"email\": \"student@example.com\",\n  \"password\": \"password123\",\n  \"phone\": \"+201000000000\",\n  \"nationality\": \"Sudan\"\n}" },
+            "url": "{{base_url}}/auth/register"
+          }
+        },
+        {
+          "name": "Login",
+          "event": [{
+            "listen": "test",
+            "script": { "type": "text/javascript", "exec": ["const json = pm.response.json();", "if (json.token) pm.collectionVariables.set('token', json.token);"] }
+          }],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@gam3a.local\",\n  \"password\": \"password\"\n}" },
+            "url": "{{base_url}}/auth/login"
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "url": "{{base_url}}/me"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+            "url": "{{base_url}}/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Presentation Catalog",
+      "item": [
+        { "name": "Universities", "request": { "method": "GET", "url": "{{base_url}}/universities" } },
+        { "name": "University Details", "request": { "method": "GET", "url": "{{base_url}}/universities/cairo-university" } },
+        { "name": "Programs", "request": { "method": "GET", "url": "{{base_url}}/programs" } },
+        { "name": "Certificate Tracks", "request": { "method": "GET", "url": "{{base_url}}/certificate-tracks" } },
+        { "name": "Calculator Rules", "request": { "method": "GET", "url": "{{base_url}}/calculator-rules" } },
+        {
+          "name": "Calculate Equivalency",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"calculator_rule_id\": 1,\n  \"grades\": {\n    \"english\": 90,\n    \"math\": 95,\n    \"biology\": 88,\n    \"chemistry\": 86,\n    \"physics\": 84\n  }\n}" },
+            "url": "{{base_url}}/calculate-equivalency"
+          }
+        },
+        { "name": "Equivalency Centers", "request": { "method": "GET", "url": "{{base_url}}/equivalency-centers?country=Egypt" } },
+        { "name": "WordPress Articles", "request": { "method": "GET", "url": "{{base_url}}/content/articles" } },
+        { "name": "WordPress Article Details", "request": { "method": "GET", "url": "{{base_url}}/content/articles/igcse-admission-egypt" } }
+      ]
+    },
+    {
+      "name": "Student Applications",
+      "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+      "item": [
+        { "name": "Student Dashboard", "request": { "method": "GET", "url": "{{base_url}}/dashboard" } },
+        { "name": "List My Applications", "request": { "method": "GET", "url": "{{base_url}}/applications" } },
+        {
+          "name": "Create Application",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"certificate_track_id\": 1,\n  \"academic_year\": \"2026/2027\",\n  \"full_name\": \"Ahmed Ali\",\n  \"passport_number\": \"P123456\",\n  \"nationality\": \"Sudan\",\n  \"score\": 87,\n  \"choices\": [\n    { \"program_id\": 1, \"rank\": 1 },\n    { \"program_id\": 2, \"rank\": 2 }\n  ]\n}" },
+            "url": "{{base_url}}/applications"
+          }
+        },
+        { "name": "Application Details", "request": { "method": "GET", "url": "{{base_url}}/applications/{{application_id}}" } },
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "body": { "mode": "formdata", "formdata": [{ "key": "type", "value": "passport", "type": "text" }, { "key": "file", "type": "file", "src": "" }] },
+            "url": "{{base_url}}/applications/{{application_id}}/documents"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Admin Operations",
+      "auth": { "type": "bearer", "bearer": [{ "key": "token", "value": "{{token}}", "type": "string" }] },
+      "item": [
+        { "name": "Admin Dashboard", "request": { "method": "GET", "url": "{{base_url}}/admin/dashboard" } },
+        { "name": "Admin Applications", "request": { "method": "GET", "url": "{{base_url}}/admin/applications?status=under_review" } },
+        { "name": "Admin Application Details", "request": { "method": "GET", "url": "{{base_url}}/admin/applications/{{application_id}}" } },
+        {
+          "name": "Update Application Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"under_review\",\n  \"note\": \"Documents are being checked by operations.\"\n}" },
+            "url": "{{base_url}}/admin/applications/{{application_id}}/status"
+          }
+        },
+        {
+          "name": "Update Document Review Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"approved\",\n  \"review_notes\": \"Clear copy.\"\n}" },
+            "url": "{{base_url}}/admin/applications/{{application_id}}/documents/{{document_id}}/status"
+          }
+        },
+        { "name": "Admin List Resource", "request": { "method": "GET", "url": "{{base_url}}/admin/{{resource}}" } },
+        {
+          "name": "Admin Create Calculator Rule",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Saudi secondary weighted score\",\n  \"certificate_track_id\": 4,\n  \"country\": \"Saudi Arabia\",\n  \"rule_type\": \"equivalency\",\n  \"formula\": { \"weights\": { \"general\": 0.7, \"aptitude\": 0.3 }, \"bonus\": 0 },\n  \"inputs_schema\": { \"required\": [\"general\", \"aptitude\"] },\n  \"result_schema\": { \"score\": \"percentage\" },\n  \"notes\": \"Editable by operations.\"\n}" },
+            "url": "{{base_url}}/admin/calculator-rules"
+          }
+        },
+        {
+          "name": "Admin Create Equivalency Center",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Equivalency Office Cairo\",\n  \"country\": \"Egypt\",\n  \"city\": \"Cairo\",\n  \"authority\": \"SCU\",\n  \"address\": \"Cairo\",\n  \"required_documents\": [\"Passport\", \"Certificate\", \"Transcript\"],\n  \"processing_notes\": \"Confirm yearly requirements before submission.\"\n}" },
+            "url": "{{base_url}}/admin/equivalency-centers"
+          }
+        },
+        { "name": "Admin Show Resource", "request": { "method": "GET", "url": "{{base_url}}/admin/{{resource}}/{{resource_id}}" } },
+        {
+          "name": "Admin Update Resource",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Accept", "value": "application/json" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"is_active\": true\n}" },
+            "url": "{{base_url}}/admin/{{resource}}/{{resource_id}}"
+          }
+        },
+        { "name": "Admin Delete Resource", "request": { "method": "DELETE", "url": "{{base_url}}/admin/{{resource}}/{{resource_id}}" } }
+      ]
+    }
+  ]
+}
