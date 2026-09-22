@@ -2,7 +2,7 @@
 /vendor
 /node_modules
 
-/public/storage
+
 *.zip
 *.tar
 *.log
