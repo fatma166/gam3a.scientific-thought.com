@@ -27,6 +27,7 @@
         <h1>Gam3a Admin</h1>
         <nav>
             <a href="/admin">لوحة التحكم</a>
+            <a href="/admin/homepage">الرئيسية localhost:3000</a>
             <a href="/admin/resources/site-content">محتوى الموقع والخدمات والأسئلة</a>
             <a href="/admin/resources/faculties">الكليات</a>
             <a href="/admin/applications">الطلبات</a>
@@ -34,6 +35,7 @@
             <a href="/admin/resources/programs">البرامج</a>
             <a href="/admin/resources/admission-rules">شروط القبول</a>
             <a href="/admin/resources/calculator-rules">قواعد الحاسبة</a>
+            <a href="/admin/resources/eligibility-search-rules">قواعد بحث الأهلية</a>
             <a href="/admin/resources/equivalency-centers">أماكن المعادلة</a>
             <a href="/admin/resources/certificate-tracks">الشهادات</a>
         </nav>

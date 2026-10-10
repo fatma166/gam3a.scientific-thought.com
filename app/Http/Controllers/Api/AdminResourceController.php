@@ -7,6 +7,7 @@ use App\Models\AdmissionRule;
 use App\Models\CalculatorRule;
 use App\Models\CertificateTrack;
 use App\Models\EquivalencyCenter;
+use App\Models\EligibilitySearchRule;
 use App\Models\Faculty;
 use App\Models\Program;
 use App\Models\University;
@@ -22,6 +23,7 @@ class AdminResourceController extends Controller
         'certificate-tracks' => CertificateTrack::class,
         'admission-rules' => AdmissionRule::class,
         'calculator-rules' => CalculatorRule::class,
+        'eligibility-search-rules' => EligibilitySearchRule::class,
         'equivalency-centers' => EquivalencyCenter::class,
     ];
 
@@ -148,6 +150,16 @@ class AdminResourceController extends Controller
                 'inputs_schema.min_subjects' => ['sometimes', 'integer', 'min:1'],
                 'result_schema' => ['nullable', 'array'],
                 'notes' => ['nullable', 'string'],
+                'is_active' => ['sometimes', 'boolean'],
+            ]),
+            'eligibility-search-rules' => $request->validate([
+                'name' => [$required, 'string', 'max:255'],
+                'certificate_track_id' => [$required, 'exists:certificate_tracks,id'],
+                'program_id' => ['nullable', 'exists:programs,id'],
+                'specialty_keyword' => ['nullable', 'string', 'max:120'],
+                'minimum_score' => [$required, 'numeric', 'between:0,100'],
+                'priority' => ['sometimes', 'integer', 'min:0'],
+                'message' => ['nullable', 'string'],
                 'is_active' => ['sometimes', 'boolean'],
             ]),
             'equivalency-centers' => $request->validate([

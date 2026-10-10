@@ -8,7 +8,7 @@
     $fields = array_values(array_diff($model->getFillable(), $jsonFields, ['is_active']));
     $defaults = ['sort_order' => 0, 'degree' => 'bachelor', 'language' => 'Arabic', 'tuition_currency' => 'EGP', 'rule_type' => 'equivalency'];
     $relations = ['university_id' => \App\Models\University::class, 'faculty_id' => \App\Models\Faculty::class, 'program_id' => \App\Models\Program::class, 'certificate_track_id' => \App\Models\CertificateTrack::class];
-    $labels = ['name'=>'الاسم','slug'=>'الرابط المختصر','kind'=>'نوع المحتوى','sort_order'=>'ترتيب العرض','university_id'=>'الجامعة','faculty_id'=>'الكلية','program_id'=>'البرنامج','certificate_track_id'=>'الشهادة','minimum_score'=>'الحد الأدنى للمجموع','notes'=>'ملاحظات','description'=>'الوصف','city'=>'المدينة','country'=>'الدولة','image_url'=>'رابط الصورة'];
+    $labels = ['name'=>'الاسم','slug'=>'الرابط المختصر','kind'=>'نوع المحتوى','sort_order'=>'ترتيب العرض','university_id'=>'الجامعة','faculty_id'=>'الكلية','program_id'=>'البرنامج','certificate_track_id'=>'الشهادة','minimum_score'=>'الحد الأدنى للمجموع','specialty_keyword'=>'كلمة التخصص في البحث','priority'=>'الأولوية','message'=>'رسالة النتيجة','notes'=>'ملاحظات','description'=>'الوصف','city'=>'المدينة','country'=>'الدولة','image_url'=>'رابط الصورة'];
 @endphp
 <form class="card" method="post" action="{{ $item ? "/admin/resources/{$resource}/{$item->id}" : "/admin/resources/{$resource}" }}">
     @csrf

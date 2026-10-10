@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\CalculatorRule;
 use App\Models\EquivalencyCenter;
+use App\Models\EligibilitySearchRule;
 use Illuminate\Http\Request;
 
 class CalculatorController extends Controller
@@ -62,5 +63,41 @@ class CalculatorController extends Controller
             ->orderBy('country')
             ->orderBy('city')
             ->get();
+    }
+
+    public function searchEligibility(Request $request)
+    {
+        $data = $request->validate([
+            'certificate_track_id' => ['required', 'exists:certificate_tracks,id'],
+            'score' => ['required', 'numeric', 'between:0,100'],
+            'specialty' => ['nullable', 'string', 'max:120'],
+        ]);
+
+        $specialty = trim((string) ($data['specialty'] ?? ''));
+
+        $rules = EligibilitySearchRule::query()
+            ->with(['certificateTrack', 'program.faculty.university'])
+            ->where('is_active', true)
+            ->where('certificate_track_id', $data['certificate_track_id'])
+            ->where('minimum_score', '<=', $data['score'])
+            ->when($specialty !== '', function ($query) use ($specialty) {
+                $query->where(function ($inner) use ($specialty) {
+                    $inner->whereNull('specialty_keyword')
+                        ->orWhere('specialty_keyword', '')
+                        ->orWhereRaw('LOWER(?) LIKE CONCAT(\'%\', LOWER(specialty_keyword), \'%\')', [$specialty])
+                        ->orWhereHas('program', fn ($program) => $program->where('name', 'ilike', '%'.$specialty.'%'));
+                });
+            })
+            ->orderByDesc('priority')
+            ->orderByDesc('minimum_score')
+            ->limit(12)
+            ->get();
+
+        return [
+            'matches' => $rules,
+            'summary' => $rules->isEmpty()
+                ? 'لم نجد قواعد مطابقة حاليًا. جرّب تعديل المجموع أو اطلب استشارة.'
+                : 'وجدنا '.$rules->count().' نتيجة مناسبة حسب القواعد المنشورة في لوحة التحكم.',
+        ];
     }
 }

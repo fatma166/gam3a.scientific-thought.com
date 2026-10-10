@@ -35,6 +35,7 @@ Route::get('/programs', [CatalogController::class, 'programs']);
 Route::get('/certificate-tracks', [CatalogController::class, 'certificateTracks']);
 Route::get('/calculator-rules', [CalculatorController::class, 'rules']);
 Route::post('/calculate-equivalency', [CalculatorController::class, 'calculate']);
+Route::post('/search-eligibility', [CalculatorController::class, 'searchEligibility']);
 Route::get('/equivalency-centers', [CalculatorController::class, 'equivalencyCenters']);
 Route::get('/site', [\App\Http\Controllers\Api\SiteController::class, 'index']);
 Route::get('/content/articles', [\App\Http\Controllers\Api\SiteController::class, 'articles']);

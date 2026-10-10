@@ -15,6 +15,8 @@ class DatabaseSeeder extends Seeder
 {
     public function run(): void
     {
+        $this->call(SiteContentSeeder::class);
+
         User::firstOrCreate(
             ['email' => 'admin@gam3a.local'],
             ['name' => 'Gam3a Admin', 'password' => 'password', 'role' => 'admin']
@@ -117,5 +119,7 @@ class DatabaseSeeder extends Seeder
                 );
             }
         }
+
+        $this->call(DemoContentSeeder::class);
     }
 }

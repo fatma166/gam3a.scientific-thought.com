@@ -28,6 +28,7 @@ Route::prefix('admin')->group(function () {
     Route::middleware(['auth', 'can:operate-platform'])->group(function () {
         Route::post('/logout', [AuthController::class, 'logout'])->name('admin.logout');
         Route::get('/', [DashboardController::class, 'index'])->name('admin.dashboard');
+        Route::get('/homepage', fn () => redirect('/admin/resources/site-content?scope=home'))->name('admin.homepage');
         Route::get('/applications', [ApplicationController::class, 'index'])->name('admin.applications.index');
         Route::get('/applications/{application}', [ApplicationController::class, 'show'])->name('admin.applications.show');
         Route::patch('/applications/{application}/status', [ApplicationController::class, 'updateStatus'])->name('admin.applications.status');

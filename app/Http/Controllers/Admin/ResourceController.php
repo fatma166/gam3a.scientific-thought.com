@@ -7,6 +7,7 @@ use App\Models\AdmissionRule;
 use App\Models\CalculatorRule;
 use App\Models\CertificateTrack;
 use App\Models\EquivalencyCenter;
+use App\Models\EligibilitySearchRule;
 use App\Models\Faculty;
 use App\Models\Program;
 use App\Models\University;
@@ -22,13 +23,26 @@ class ResourceController extends Controller
         'certificate-tracks' => ['label' => 'الشهادات', 'model' => CertificateTrack::class],
         'admission-rules' => ['label' => 'شروط القبول', 'model' => AdmissionRule::class],
         'calculator-rules' => ['label' => 'قواعد الحاسبة', 'model' => CalculatorRule::class],
+        'eligibility-search-rules' => ['label' => 'قواعد بحث الأهلية', 'model' => EligibilitySearchRule::class],
         'equivalency-centers' => ['label' => 'أماكن المعادلة', 'model' => EquivalencyCenter::class],
     ];
 
-    public function index(string $resource)
+    public function index(string $resource, Request $request)
     {
         $config = $this->resource($resource);
-        $items = $config['model']::latest()->paginate(20);
+        $query = $config['model']::query();
+
+        if ($resource === 'site-content' && $request->query('scope') === 'home') {
+            $query->where(function ($inner) {
+                $inner->where('slug', 'home')
+                    ->orWhere('slug', 'site-settings')
+                    ->orWhereIn('kind', ['service', 'faq', 'article']);
+            });
+        } elseif ($resource === 'site-content' && $request->query('kind')) {
+            $query->where('kind', $request->query('kind'));
+        }
+
+        $items = $query->orderBy('sort_order')->orderBy('id')->paginate(20)->withQueryString();
 
         return view('admin.resources.index', compact('resource', 'config', 'items'));
     }
